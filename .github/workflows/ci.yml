@@ -1,10 +1,8 @@
-name: CI/CD Pipeline
+name: CI Pipeline
 
 on:
-  push:
-    branches: [main, test]
   pull_request:
-    branches: [main, test]
+    branches: [dev]
 
 jobs:
   # ─── Tests Unitaires ─────────────────────────────────────────
@@ -94,32 +92,3 @@ jobs:
         run: cd server && dart test test/integration/ --concurrency=1
         env:
           TEST_DATABASE_URL: postgres://todo:todo@localhost:5432/todo_test
-
-  # ─── Tests Système (E2E) ─────────────────────────────────────
-  # Responsable : QA
-# ─── Déploiement ─────────────────────────────────────────────
-  # Responsable : DevOps
-  # Déclenche le webhook Dokploy après tous les tests
-  deploy:
-    name: "Déploiement Dokploy"
-    runs-on: ubuntu-latest
-    needs: [unit-tests, acceptance-tests, integration-tests]
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - name: Trigger Dokploy deployment
-        run: |
-          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            --max-time 10 \
-            -X POST \
-            -H "accept: application/json" \
-            -H "x-api-key: ${{ secrets.DOKPLOY_API_KEY }}" \
-            -H "Content-Type: application/json" \
-            -d "{\"applicationId\": \"${{ secrets.DOKPLOY_APP_ID }}\"}" \
-            "https://admin.gaspardtapon.fr/application.deploy") || true
-          echo "HTTP Status: $HTTP_STATUS"
-          if [ "$HTTP_STATUS" = "200" ] || [ "$HTTP_STATUS" = "000" ]; then
-            echo "Deployment triggered successfully"
-          else
-            echo "Error: Deployment failed with status $HTTP_STATUS"
-            exit 1
-          fi
