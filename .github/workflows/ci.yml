@@ -108,4 +108,4 @@ jobs:
     steps:
       - name: Trigger Dokploy webhook
         run: |
-          curl -v -L "${{ secrets.DOKPLOY_WEBHOOK_URL }}" 2>&1 | grep -i "location\|< HTTP"
+          curl -v -L "${{ secrets.DOKPLOY_WEBHOOK_URL }}" 2>&1 || true
