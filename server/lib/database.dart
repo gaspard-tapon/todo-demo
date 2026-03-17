@@ -10,7 +10,10 @@ class Database {
     final endpoint = _parseConnectionString(connectionString);
     _pool = Pool.withEndpoints(
       [endpoint],
-      settings: PoolSettings(maxConnectionCount: 5),
+      settings: PoolSettings(
+        maxConnectionCount: 5,
+        sslMode: SslMode.disable,
+      ),
     );
 
     await _pool.execute('''
