@@ -106,17 +106,17 @@ jobs:
     needs: [unit-tests, acceptance-tests, integration-tests]
     if: github.ref == 'refs/heads/main'
     steps:
-      - name: Trigger Dokploy webhook
+      - name: Trigger Dokploy deployment
         run: |
           HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            -L --max-time 10 \
-            "${{ secrets.DOKPLOY_WEBHOOK_URL }}/") || true
+            -X POST \
+            -H "accept: application/json" \
+            -H "x-api-key: ${{ secrets.DOKPLOY_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d "{\"applicationId\": \"${{ secrets.DOKPLOY_APP_ID }}\"}" \
+            "https://admin.gaspardtapon.fr/api/application.deploy")
           echo "HTTP Status: $HTTP_STATUS"
-          if [ "$HTTP_STATUS" = "000" ]; then
-            echo "Webhook triggered (deploy in progress, no response waited)"
-          elif [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
-            echo "Webhook triggered successfully"
-          else
-            echo "Error: Webhook failed with status $HTTP_STATUS"
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "Error: Deployment failed with status $HTTP_STATUS"
             exit 1
           fi
