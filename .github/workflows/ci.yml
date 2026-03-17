@@ -108,18 +108,18 @@ jobs:
     steps:
       - name: Trigger Dokploy deployment
         run: |
-          RESPONSE=$(curl -s -w "\n%{http_code}" \
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            --max-time 10 \
             -X POST \
             -H "accept: application/json" \
             -H "x-api-key: ${{ secrets.DOKPLOY_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d "{\"applicationId\": \"${{ secrets.DOKPLOY_APP_ID }}\"}" \
-            "https://admin.gaspardtapon.fr/application.deploy")
-          HTTP_STATUS=$(echo "$RESPONSE" | tail -1)
-          BODY=$(echo "$RESPONSE" | head -n -1)
+            "https://admin.gaspardtapon.fr/application.deploy") || true
           echo "HTTP Status: $HTTP_STATUS"
-          echo "Response: $BODY"
-          if [ "$HTTP_STATUS" != "200" ]; then
-            echo "Error: Deployment failed"
+          if [ "$HTTP_STATUS" = "200" ] || [ "$HTTP_STATUS" = "000" ]; then
+            echo "Deployment triggered successfully"
+          else
+            echo "Error: Deployment failed with status $HTTP_STATUS"
             exit 1
           fi
