@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todo/app.dart';
 import 'package:todo/providers/todo_providers.dart';
@@ -56,8 +55,6 @@ class InMemoryTodoRepository implements TodoRepository {
 }
 
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
-
   testWidgets('Full CRUD flow — system test', (tester) async {
     final repo = InMemoryTodoRepository();
 
