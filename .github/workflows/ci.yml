@@ -108,4 +108,13 @@ jobs:
     steps:
       - name: Trigger Dokploy webhook
         run: |
-          curl -v -L "${{ secrets.DOKPLOY_WEBHOOK_URL }}" 2>&1 || true
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"ref": "refs/heads/main", "branch": "main"}' \
+            "${{ secrets.DOKPLOY_WEBHOOK_URL }}")
+          echo "HTTP Status: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "Error: Webhook failed with status $HTTP_STATUS"
+            exit 1
+          fi
