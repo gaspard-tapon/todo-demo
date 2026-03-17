@@ -8,9 +8,13 @@ import 'package:todo_server/handlers/todo_handler.dart';
 import 'package:todo_server/router.dart';
 
 Future<void> main() async {
-  final databaseUrl = Platform.environment['DATABASE_URL'] ??
-      'postgres://todo:todo@localhost:5432/todo_dev';
+  final databaseUrl = Platform.environment['DATABASE_URL'];
+  if (databaseUrl == null || databaseUrl.isEmpty) {
+    stderr.writeln('ERROR: DATABASE_URL environment variable is required.');
+    exit(1);
+  }
   final port = int.parse(Platform.environment['PORT'] ?? '8080');
+  final corsOrigin = Platform.environment['CORS_ORIGIN'] ?? '*';
 
   // Initialize database
   final db = Database(connectionString: databaseUrl);
@@ -34,14 +38,15 @@ Future<void> main() async {
   }
 
   // CORS middleware
+  final corsHeaders = _buildCorsHeaders(corsOrigin);
   Middleware cors() {
     return (Handler innerHandler) {
       return (Request request) async {
         if (request.method == 'OPTIONS') {
-          return Response.ok('', headers: _corsHeaders);
+          return Response.ok('', headers: corsHeaders);
         }
         final response = await innerHandler(request);
-        return response.change(headers: _corsHeaders);
+        return response.change(headers: corsHeaders);
       };
     };
   }
@@ -66,8 +71,8 @@ Future<void> main() async {
   });
 }
 
-const _corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-};
+Map<String, String> _buildCorsHeaders(String origin) => {
+      'Access-Control-Allow-Origin': origin,
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    };

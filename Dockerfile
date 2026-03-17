@@ -22,5 +22,4 @@ WORKDIR /app
 COPY --from=server-build /app/server/bin/server ./server
 COPY --from=flutter-build /app/build/web ./public
 EXPOSE 8080
-ENV PORT=8080
 CMD ["./server"]
