@@ -109,7 +109,7 @@ jobs:
       - name: Trigger Dokploy webhook
         run: |
           HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -L \
-            -X POST "${{ secrets.DOKPLOY_WEBHOOK_URL }}")
+            "${{ secrets.DOKPLOY_WEBHOOK_URL }}")
           echo "HTTP Status: $HTTP_STATUS"
           if [ "$HTTP_STATUS" -lt 200 ] || [ "$HTTP_STATUS" -ge 300 ]; then
             echo "::error::Webhook failed with status $HTTP_STATUS"
