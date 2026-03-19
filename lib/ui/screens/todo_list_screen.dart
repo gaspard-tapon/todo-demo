@@ -13,10 +13,7 @@ class TodoListScreen extends ConsumerWidget {
     final filteredTodos = ref.watch(filteredTodosProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Todo List'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Todo List'), centerTitle: true),
       body: Column(
         children: [
           const TodoFilters(),
@@ -27,7 +24,10 @@ class TodoListScreen extends ConsumerWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('Error: $error', style: const TextStyle(color: Colors.red)),
+                    Text(
+                      'Error: $error',
+                      style: const TextStyle(color: Colors.red),
+                    ),
                     const SizedBox(height: 16),
                     FilledButton(
                       onPressed: () => ref.invalidate(todoListProvider),
@@ -41,7 +41,7 @@ class TodoListScreen extends ConsumerWidget {
                   return const Center(
                     child: Text(
                       'No todos yet',
-                      style: TextStyle(fontSize: 18, color: Colors.grey),
+                      style: TextStyle(fontSize: 18, color: Colors.blue),
                     ),
                   );
                 }
@@ -53,8 +53,9 @@ class TodoListScreen extends ConsumerWidget {
                       todo: todo,
                       onToggle: () =>
                           ref.read(todoListProvider.notifier).toggleTodo(todo),
-                      onDelete: () =>
-                          ref.read(todoListProvider.notifier).deleteTodo(todo.id),
+                      onDelete: () => ref
+                          .read(todoListProvider.notifier)
+                          .deleteTodo(todo.id),
                     );
                   },
                 );
@@ -70,7 +71,9 @@ class TodoListScreen extends ConsumerWidget {
             builder: (_) => const AddTodoDialog(),
           );
           if (result != null) {
-            await ref.read(todoListProvider.notifier).addTodo(
+            await ref
+                .read(todoListProvider.notifier)
+                .addTodo(
                   title: result['title']!,
                   description: result['description'],
                 );
