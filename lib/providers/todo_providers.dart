@@ -8,7 +8,9 @@ enum TodoFilter { all, active, completed }
 
 final httpClientProvider = Provider<http.Client>((ref) => http.Client());
 
-final baseUrlProvider = Provider<String>((ref) => 'http://localhost:8080');
+const _defaultBaseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'http://localhost:8080');
+
+final baseUrlProvider = Provider<String>((ref) => _defaultBaseUrl);
 
 final todoRepositoryProvider = Provider<TodoRepository>((ref) {
   return ApiTodoRepository(

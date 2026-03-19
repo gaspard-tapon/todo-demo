@@ -31,7 +31,7 @@ class TodoListScreen extends ConsumerWidget {
                     const SizedBox(height: 16),
                     FilledButton(
                       onPressed: () => ref.invalidate(todoListProvider),
-                      child: const Text('Retry'),
+                      child: const Text(''),
                     ),
                   ],
                 ),

@@ -1,11 +1,12 @@
 # Stage 1: Build Flutter web
 FROM ghcr.io/cirruslabs/flutter:stable AS flutter-build
+ARG API_BASE_URL=http://localhost:8080
 WORKDIR /app
 COPY pubspec.yaml pubspec.lock ./
 COPY lib/ lib/
 COPY web/ web/
 RUN flutter pub get
-RUN flutter build web --release
+RUN flutter build web --release --dart-define=API_BASE_URL=$API_BASE_URL
 
 # Stage 2: Build Dart server
 FROM dart:stable AS server-build
